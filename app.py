@@ -59,7 +59,7 @@ REPORT_SCHEMA = {
 @st.cache_data(show_spinner=False)
 def asset_uri(filename):
     """정적 이미지를 HTML 게임 화면에서 사용할 수 있게 읽는다."""
-    path = ROOT / "assets" / filename
+    path = ROOT / filename
     if not path.is_file():
         return ""
     return "data:image/webp;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
