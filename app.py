@@ -268,6 +268,92 @@ div[data-testid="stButton"] button{border-radius:6px;min-height:40px;border-colo
 [data-testid="stRadio"]{background:#151f32;border:1px solid #4c5771;border-radius:7px;padding:10px 13px}
 [data-testid="stProgress"]{margin:12px 0}
 @media(max-width:760px){.block-container{padding-top:.7rem}.main-banner{padding:16px}.courtroom-scene{min-height:270px;aspect-ratio:13/9}.sprite-defense{width:52%;left:-10%}.sprite-prosecutor{width:52%;right:-10%}.sprite-judge{width:32%;left:34%;bottom:17%}.court-tag{font-size:10px;padding:4px 6px}.tag-judge{bottom:33px}.dialogue-panel{margin:14px 2px 0;padding:25px 14px 17px}.progress-step{min-width:94px;font-size:11px}.courtroom-top{font-size:8px;letter-spacing:.08em}.courtroom-top span{padding:0 2px}}
+
+/* ========== 접근성: Streamlit 기본 테마와 무관하게 또렷한 색상 ========== */
+[data-testid="stAppViewContainer"]{color:#f7f2e9}
+[data-testid="stWidgetLabel"] p,
+[data-testid="stWidgetLabel"] span,
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] > label,
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] > label p{
+  color:#fff8e9!important;opacity:1!important;font-weight:800!important;
+  font-size:16px!important;line-height:1.55!important;
+}
+/* 투표 항목: 금색/파란색 고대비. 다크 배경 위 짙은 글씨 현상 방지 */
+[data-testid="stAppViewContainer"] [data-testid="stRadio"]{
+  background:linear-gradient(140deg,#1e304d,#17243c)!important;
+  border:2px solid #7896bd!important;
+  border-radius:12px!important;
+  padding:17px 19px!important;
+  box-shadow:0 6px 22px rgba(0,0,0,.16);
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"]{
+  gap:9px!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] label{
+  color:#fff9eb!important;opacity:1!important;font-size:16px!important;
+  border:1px solid #6884a8;border-radius:9px;
+  background:#243753;padding:8px 12px;cursor:pointer;
+  transition:background-color .15s,border-color .15s;
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] label:hover{
+  background:#304969;border-color:#f5ce82;
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] label:has(input:checked){
+  background:#4b3e31;border-color:#f7d28d;box-shadow:inset 0 0 0 1px #f0c879;
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] p,
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] span,
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] div{
+  color:#fffaf0!important;opacity:1!important;font-size:16px!important;font-weight:750!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stRadio"] input[type="radio"]{
+  accent-color:#ffd886!important;
+}
+.vote-heading{
+  color:#ffdb96;font-weight:900;font-size:18px;line-height:1.5;
+  margin:14px 0 10px;letter-spacing:-.02em;
+}
+/* 다운로드: 흰 배경 + 연한 글씨를 방지하고 버튼 전체를 고정된 팔레트로 */
+[data-testid="stAppViewContainer"] [data-testid="stDownloadButton"] button,
+[data-testid="stAppViewContainer"] [data-testid="stFormSubmitButton"] button{
+  background:linear-gradient(180deg,#ffe9aa 0%,#ebbd6e 100%)!important;
+  border:2px solid #a57331!important;color:#292016!important;
+  border-radius:9px!important;min-height:50px!important;
+  box-shadow:0 4px 0 #76512a!important;
+  font-size:16px!important;font-weight:900!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stDownloadButton"] button *,
+[data-testid="stAppViewContainer"] [data-testid="stFormSubmitButton"] button *{
+  color:#292016!important;fill:#292016!important;opacity:1!important;
+  font-size:16px!important;font-weight:900!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stDownloadButton"] button:hover,
+[data-testid="stAppViewContainer"] [data-testid="stFormSubmitButton"] button:hover{
+  background:#ffe6a1!important;border-color:#eec67a!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stButton"] button[kind="primary"] *{
+  color:#292016!important;opacity:1!important;font-weight:900!important;
+}
+/* 일반 버튼, 설정 사이드바, 도우미 설명 */
+[data-testid="stAppViewContainer"] [data-testid="stButton"] button:not([kind="primary"]){
+  background:#21344e!important;border:1px solid #8198b4!important;color:#fff4df!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stButton"] button:not([kind="primary"]) *{
+  color:#fff4df!important;opacity:1!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] p,
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] p{
+  color:#c0ccdf!important;opacity:1!important;font-size:13px!important;
+}
+[data-testid="stAppViewContainer"] [data-testid="stSelectbox"] *,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p{
+  color:#f4f0e8!important;opacity:1!important;
+}
+@media(max-width:760px){
+  [data-testid="stAppViewContainer"] [data-testid="stRadio"]{padding:12px 13px!important;}
+  [data-testid="stAppViewContainer"] [data-testid="stRadio"] [role="radiogroup"] label{padding:7px 9px;}
+  .vote-heading{font-size:16px;}
+}
 </style>
 """)
 
@@ -409,7 +495,8 @@ st.html(scene_html(st.session_state.current_side, st.session_state.current_line)
 if st.session_state.topic and not st.session_state.game_started:
     st.html('<div class="section-kicker">CASE 02 · 판사님의 사전 의견</div>')
     st.html(f'<div class="info-panel"><b>오늘의 안건</b><br>{escape(st.session_state.topic)}</div>')
-    st.radio("토론이 시작되기 전, 판사님의 의견은?", CHOICES, key="vote_before", index=None, horizontal=True)
+    st.html('<div class="vote-heading">⚖️ 판사님, 토론 전 어느 쪽의 의견에 동의하시나요?</div>')
+    st.radio("토론이 시작되기 전, 판사님의 의견은?", CHOICES, key="vote_before", index=None, horizontal=True, label_visibility="collapsed")
     can_start = st.session_state.get("vote_before") in CHOICES
     if st.button("⚔️ 개정! 변호사 AI 첫 발언 듣기", type="primary", use_container_width=True, disabled=not can_start, key="start_debate"):
         s = st.session_state
@@ -490,7 +577,8 @@ if st.session_state.report:
     st.html(f'<div class="info-panel"><b>🔨 최후 질문</b><br>{FINAL_QUESTION}</div>')
     if st.session_state.final_choice is None:
         with st.form("judge_choice"):
-            st.radio("판사님, 어떤 측의 주장을 채택하시겠습니까?", CHOICES, key="vote_after", index=None)
+            st.html('<div class="vote-heading">🔨 최종 판결을 선택해 주세요</div>')
+            st.radio("판사님, 어떤 측의 주장을 채택하시겠습니까?", CHOICES, key="vote_after", index=None, label_visibility="collapsed")
             submit = st.form_submit_button("🔨 판결 선고하기", use_container_width=True)
         if submit:
             picked = st.session_state.get("vote_after")
