@@ -166,7 +166,7 @@ def scene_html(side, message):
         <img class="sprite sprite-judge" src="{judge}" alt="판사인 사용자를 상징하는 인간 캐릭터"/>
         <img class="sprite sprite-prosecutor" src="{prosecution}" alt="검사 AI 캐릭터"/>
         <div class="court-tag tag-defense">변호사 AI <small>찬성</small></div>
-        <div class="court-tag tag-judge">판사 (당신)</div>
+        <div class="court-tag tag-judge">판사 (장세은)</div>
         <div class="court-tag tag-prosecutor">검사 AI <small>반대</small></div>
       </div>
       <div class="dialogue-panel {cls}">
