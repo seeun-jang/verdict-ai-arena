@@ -59,7 +59,10 @@ REPORT_SCHEMA = {
 @st.cache_data(show_spinner=False)
 def asset_uri(filename):
     """정적 이미지를 HTML 게임 화면에서 사용할 수 있게 읽는다."""
-    path = ROOT / filename
+    # GitHub 업로드 방식 두 가지 지원: assets/ 폴더 또는 저장소 최상위
+    path = ROOT / "assets" / filename
+    if not path.is_file():
+        path = ROOT / filename
     if not path.is_file():
         return ""
     return "data:image/webp;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
@@ -149,8 +152,8 @@ def scene_html(side, message):
     prosecution = asset_uri("prosecutor.webp")
     if not all((bg, judge, defense, prosecution)):
         return ("<div class='info-panel'><b>⚠️ 캐릭터 이미지 파일이 없습니다.</b><br>"
-                "GitHub 루트에 assets/ 폴더와 courtroom.webp, judge.webp, "
-                "defense.webp, prosecutor.webp를 함께 올려 주세요.</div>")
+                "GitHub에 courtroom.webp, judge.webp, "
+                "defense.webp, prosecutor.webp를 함께 올려 주세요. (루트 또는 assets/ 폴더)</div>")
     return f"""
     <div class="visual-novel" role="group" aria-label="법정 토론 게임 장면">
       <div class="courtroom-scene {cls}" style="background-image:url('{bg}')">
@@ -197,10 +200,10 @@ def transcript_text():
 
 
 # =============== 비주얼 스타일 (고전 게임 법정 UI) ==================
-st.markdown("""
+st.html("""
 <style>
 :root{color-scheme:dark}
-[data-testid="stAppViewContainer"]{background:#0a1020 radial-gradient(ellipse at 48% -5%,#2b2c48 0%,transparent 52%);color:#f8f0dd}
+[data-testid="stAppViewContainer"]{background:radial-gradient(ellipse at 48% -5%,#2b2c48 0%,transparent 52%),#0a1020;color:#f8f0dd}
 [data-testid="stHeader"]{background:transparent}
 [data-testid="stSidebar"]{background:#10182c;border-right:2px solid #8b704a}
 .block-container{max-width:1190px;padding-top:1.3rem;padding-bottom:3.8rem}
@@ -262,7 +265,7 @@ div[data-testid="stButton"] button{border-radius:6px;min-height:40px;border-colo
 [data-testid="stProgress"]{margin:12px 0}
 @media(max-width:760px){.block-container{padding-top:.7rem}.main-banner{padding:16px}.courtroom-scene{min-height:270px;aspect-ratio:13/9}.sprite-defense{width:52%;left:-10%}.sprite-prosecutor{width:52%;right:-10%}.sprite-judge{width:32%;left:34%;bottom:17%}.court-tag{font-size:10px;padding:4px 6px}.tag-judge{bottom:33px}.dialogue-panel{margin:-5px 2px 0;padding:25px 14px 17px}.progress-step{min-width:94px;font-size:11px}.courtroom-top{font-size:8px;letter-spacing:.08em}.courtroom-top span{padding:0 2px}}
 </style>
-""", unsafe_allow_html=True)
+""")
 
 # =============== 현재 브라우저 세션에 기록 저장 ===============
 DEFAULTS = {
@@ -289,17 +292,17 @@ def current_step():
 
 
 # =============== 헤더 및 5단계 게임 네비게이션 ===============
-st.markdown("""
+st.html("""
 <div class="main-banner">
   <div class="banner-sub">✦ THE COURTROOM CHRONICLES ✦</div>
   <div class="banner-title">⚖ VERDICT COURT</div>
   <div class="banner-desc">당신은 판사입니다. 변호사 AI와 검사 AI의 주장을 듣고, 최후의 판결을 내리세요.</div>
-</div>""", unsafe_allow_html=True)
+</div>""")
 steps = ["01 안건 추첨", "02 사전 판단", "03 법정 변론", "04 기록관 분석", "05 최종 판결"]
 step_no = current_step()
-st.markdown('<div class="progress-steps">' + ''.join(
+st.html('<div class="progress-steps">' + ''.join(
     f'<div class="progress-step {"active" if i==step_no else ""}">{escape(label)}</div>'
-    for i, label in enumerate(steps, 1)) + '</div>', unsafe_allow_html=True)
+    for i, label in enumerate(steps, 1)) + '</div>')
 
 with st.sidebar:
     st.markdown("### ⚙️ COURT SETTINGS")
@@ -313,9 +316,9 @@ with st.sidebar:
     st.caption("안건 추첨은 Gemini 요청을 사용하지 않습니다. AI 기록관의 점수는 참고 의견일 뿐, 최종 판결은 판사님의 몫입니다.")
 
 # =============== STEP 1: 텍스트 슬롯형 랜덤 추첨 ===============
-st.markdown('<div class="section-kicker">CASE 01 · 쟁점 추첨</div>', unsafe_allow_html=True)
+st.html('<div class="section-kicker">CASE 01 · 쟁점 추첨</div>')
 slot = st.empty()
-slot.markdown(slot_html(st.session_state.topic or "법정에 오를 안건을 추첨해 주세요"), unsafe_allow_html=True)
+slot.html(slot_html(st.session_state.topic or "법정에 오를 안건을 추첨해 주세요"))
 if st.button("🎲 오늘의 쟁점 추첨하기", type="primary", use_container_width=True, key="draw"):
     previous_topic = st.session_state.topic
     new_case()
@@ -327,21 +330,21 @@ if st.button("🎲 오늘의 쟁점 추첨하기", type="primary", use_container
         previous = choices[-1]
     chosen = random.choice([t for t in TOPICS if t != previous_topic])
     for i, item in enumerate(choices):
-        slot.markdown(slot_html(item, spinning=True), unsafe_allow_html=True)
+        slot.html(slot_html(item, spinning=True))
         time.sleep(0.045 + 0.008*i + 0.00045*i*i)
     st.session_state.topic = chosen
     st.session_state.current_line = f"오늘의 쟁점은 '{chosen}'입니다. 판사님, 사전 의견을 말씀해 주세요."
-    slot.markdown(slot_html(chosen, spinning=False), unsafe_allow_html=True)
+    slot.html(slot_html(chosen, spinning=False))
     st.rerun()
 
 # =============== STEP 2: 게임 무대와 사전 판단 ===============
-st.markdown('<div class="section-kicker">COURTROOM · 제1 법정</div>', unsafe_allow_html=True)
+st.html('<div class="section-kicker">COURTROOM · 제1 법정</div>')
 stage = st.empty()
-stage.markdown(scene_html(st.session_state.current_side, st.session_state.current_line), unsafe_allow_html=True)
+stage.html(scene_html(st.session_state.current_side, st.session_state.current_line))
 
 if st.session_state.topic and not st.session_state.lines:
-    st.markdown('<div class="section-kicker">CASE 02 · 판사님의 사전 의견</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-panel"><b>오늘의 안건</b><br>{escape(st.session_state.topic)}</div>', unsafe_allow_html=True)
+    st.html('<div class="section-kicker">CASE 02 · 판사님의 사전 의견</div>')
+    st.html(f'<div class="info-panel"><b>오늘의 안건</b><br>{escape(st.session_state.topic)}</div>')
     st.radio("토론이 시작되기 전, 판사님의 의견은?", CHOICES, key="vote_before", index=None, horizontal=True)
     can_start = st.session_state.get("vote_before") in CHOICES
     do_start = st.button("⚔️ 개정! 변론 시작", type="primary", use_container_width=True, disabled=not can_start)
@@ -370,12 +373,12 @@ if do_start:
 
         def speak(side, history, prompt, heard, round_label):
             speaker = "변호사 AI" if side == "pro" else "검사 AI"
-            stage.markdown(scene_html(side, f"{speaker}의 발언을 준비하고 있습니다…"), unsafe_allow_html=True)
+            stage.html(scene_html(side, f"{speaker}의 발언을 준비하고 있습니다…"))
             with st.spinner(f"{speaker} 변론 중…"):
                 response = debate_turn(client, history, prompt, heard)
             s.current_side, s.current_line = side, response
             s.lines.append({"side": side, "speaker": speaker, "round": round_label, "text": response})
-            stage.markdown(scene_html(side, response), unsafe_allow_html=True)
+            stage.html(scene_html(side, response))
             progress.progress(round(len(s.lines)/total*88), text=f"🎙️ {speaker} · {round_label} ({len(s.lines)}/{total})")
             return response
 
@@ -393,7 +396,7 @@ if do_start:
             )
             s.report = json.loads(result.output_text)
         s.current_side, s.current_line = "both", FINAL_QUESTION
-        stage.markdown(scene_html("both", FINAL_QUESTION), unsafe_allow_html=True)
+        stage.html(scene_html("both", FINAL_QUESTION))
         progress.progress(100, text="✅ 양측 변론 종료 · 판사님의 최종 판결을 기다립니다")
         st.rerun()
     except Exception as error:
@@ -402,14 +405,14 @@ if do_start:
         st.error(s.error_message)
 
 if st.session_state.lines:
-    st.markdown('<div class="section-kicker">CASE 03 · 법정 변론 기록</div>', unsafe_allow_html=True)
+    st.html('<div class="section-kicker">CASE 03 · 법정 변론 기록</div>')
     left, right = st.columns(2, gap="medium")
     for i, rec in enumerate(st.session_state.lines):
         with left if rec["side"] == "pro" else right:
-            st.markdown(
+            st.html(
                 f'<div class="record {"con" if rec["side"] == "con" else ""}">'
                 f'<div class="record-meta">{escape(rec["speaker"])} · {escape(rec["round"])}</div>'
-                f'<div class="record-body">{multiline(rec["text"])}</div></div>', unsafe_allow_html=True)
+                f'<div class="record-body">{multiline(rec["text"])}</div></div>')
     if st.session_state.error_message and not st.session_state.report:
         st.warning("발언 중 오류가 생겼습니다. 일부 기록은 현재 탭에 남아 있습니다.")
     if not st.session_state.report:
@@ -423,11 +426,11 @@ if st.session_state.lines:
 # =============== STEP 4: 기록관 분석 (AI 최종 판사가 아님) ===============
 if st.session_state.report:
     report = st.session_state.report
-    st.markdown('<div class="section-kicker">CASE 04 · 기록관 AI 참고 분석</div>', unsafe_allow_html=True)
-    st.markdown(
+    st.html('<div class="section-kicker">CASE 04 · 기록관 AI 참고 분석</div>')
+    st.html(
         f'<div class="analysis-box"><div class="label">COURT CLERK · ADVISORY ONLY</div>'
         f'<div class="headline">기록관 분석: {escape(report.get("winner", "무승부"))} 측 우세</div>'
-        f'<div class="detail">{multiline(report.get("reason", ""))}</div></div>', unsafe_allow_html=True)
+        f'<div class="detail">{multiline(report.get("reason", ""))}</div></div>')
     st.caption("기록관 AI는 판사가 아닙니다. 점수는 텍스트 기반의 주관적 평가로, 사실 검증이나 법적 판결이 아닙니다.")
     scores_pro = report.get("pro_scores", {})
     scores_con = report.get("con_scores", {})
@@ -443,11 +446,11 @@ if st.session_state.report:
                 st.progress(n, text=f"🔴 검사 AI · {title} {n}/100")
     best = str(report.get("best_sentence", "")).strip()
     if best and any(best in rec["text"] for rec in st.session_state.lines):
-        st.markdown(f'<div class="best-line"><b>✦ 핵심 증언 / BEST ARGUMENT</b><br>{escape(best)}</div>', unsafe_allow_html=True)
+        st.html(f'<div class="best-line"><b>✦ 핵심 증언 / BEST ARGUMENT</b><br>{escape(best)}</div>')
 
     # =============== STEP 5: 실제 사람 판사의 선택 ===============
-    st.markdown('<div class="section-kicker">CASE 05 · 판사님의 최종 판결</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-panel"><b>🔨 최후 질문</b><br>{FINAL_QUESTION}</div>', unsafe_allow_html=True)
+    st.html('<div class="section-kicker">CASE 05 · 판사님의 최종 판결</div>')
+    st.html(f'<div class="info-panel"><b>🔨 최후 질문</b><br>{FINAL_QUESTION}</div>')
     if st.session_state.final_choice is None:
         with st.form("judge_choice"):
             st.radio("판사님, 어떤 측의 주장을 채택하시겠습니까?", CHOICES, key="vote_after", index=None)
@@ -473,9 +476,9 @@ if st.session_state.report:
             "반대": "판사님의 판결: 반대 측 검사 AI의 주장을 채택합니다.",
             "판단 보류": "판사님의 판결: 추가 근거가 필요하므로 판단을 보류합니다.",
         }[choice]
-        st.markdown(f'<div class="ruling-box"><div class="label">FINAL VERDICT · THE HUMAN JUDGE</div>'
+        st.html(f'<div class="ruling-box"><div class="label">FINAL VERDICT · THE HUMAN JUDGE</div>'
                     f'<div class="headline">{escape(choice)}</div>'
-                    f'<div class="detail">{escape(verdict_line)}</div></div>', unsafe_allow_html=True)
+                    f'<div class="detail">{escape(verdict_line)}</div></div>')
         before = st.session_state.before_locked
         st.caption(f"판사님의 사전 입장: {before} → 최종 판결: {choice} / 기록관 AI 참고 분석: {report.get('winner', '무승부')}")
         if before != choice:
