@@ -138,6 +138,10 @@ def new_case():
     st.session_state.before_locked = None
     st.session_state.final_choice = None
     st.session_state.error_message = ""
+    st.session_state.game_started = False
+    st.session_state.pro_history = []
+    st.session_state.con_history = []
+    st.session_state.used_styles = None
     st.session_state.current_side = "judge"
     st.session_state.current_line = "판사님, 오늘의 쟁점을 확인해 주십시오."
 
@@ -225,29 +229,29 @@ st.html("""
 .slot-foot span{color:#899aaf}
 .visual-novel{margin:12px 0 20px;overflow:visible}
 .courtroom-scene{background-size:cover;background-position:center 44%;border:4px solid #d4aa6e;box-shadow:inset 0 0 0 2px #54341e,0 8px 0 #080c18;position:relative;aspect-ratio:16/7.5;min-height:320px;overflow:hidden;border-radius:7px 7px 2px 2px}
-.courtroom-scene:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0004,transparent 36%,#06071377);pointer-events:none;z-index:3}
+.courtroom-scene:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#00000014,transparent 48%,#05091316);pointer-events:none;z-index:3}
 .courtroom-top{position:absolute;top:0;left:0;right:0;z-index:6;text-align:center;color:#fff1c6;text-shadow:0 2px 3px #000;letter-spacing:.24em;font-size:11px;font-weight:900;padding:11px 6px;background:linear-gradient(#0a1025bf,#0a102500)}
 .courtroom-top span{color:#dbaf5a;padding:0 10px}
 .sprite{position:absolute;object-fit:contain;max-width:none;filter:drop-shadow(0 4px 3px #090c1fbb);z-index:2;transition:filter .25s,transform .25s,opacity .25s}
 .sprite-defense{width:44%;left:-5%;bottom:-1%;z-index:4}
 .sprite-prosecutor{width:44%;right:-5%;bottom:-1%;z-index:4}
 .sprite-judge{width:28%;left:36%;bottom:13%;z-index:2}
-.courtroom-scene.pro .sprite-prosecutor,.courtroom-scene.con .sprite-defense{filter:brightness(.58) saturate(.6);opacity:.75}
+.courtroom-scene.pro .sprite-prosecutor,.courtroom-scene.con .sprite-defense{filter:drop-shadow(0 4px 3px #090c1fbb);opacity:1}
 .courtroom-scene.pro .sprite-defense{transform:translateY(-8px);filter:drop-shadow(0 0 13px #70b9ffb6)}
 .courtroom-scene.con .sprite-prosecutor{transform:translateY(-8px);filter:drop-shadow(0 0 13px #ff7f8fbc)}
-.courtroom-scene.judge .sprite-defense,.courtroom-scene.judge .sprite-prosecutor{filter:brightness(.84)}
+.courtroom-scene.judge .sprite-defense,.courtroom-scene.judge .sprite-prosecutor{filter:drop-shadow(0 4px 3px #090c1fbb);opacity:1}
 .courtroom-scene.both .sprite-judge{filter:drop-shadow(0 0 10px #fcd88ca8)}
 .court-tag{position:absolute;bottom:9px;z-index:6;border:2px solid #ecc475;color:white;font-size:13px;font-weight:900;background:linear-gradient(#273b64,#18274d);padding:5px 12px;box-shadow:0 3px 0 #100f1e;border-radius:4px;white-space:nowrap}
 .court-tag small{font-size:11px;color:#b7d5ff;margin-left:3px}
 .tag-defense{left:2%}.tag-judge{left:50%;transform:translateX(-50%);background:linear-gradient(#7c563d,#59402b)}
 .tag-prosecutor{right:2%;background:linear-gradient(#7a2b40,#581b37)}.tag-prosecutor small{color:#ffc4cb}
-.dialogue-panel{position:relative;z-index:7;margin:-6px 12px 0;border:3px solid #e6c17e;background:repeating-linear-gradient(0deg,#101e40,#101e40 3px,#122448 4px);padding:23px 24px 25px;border-radius:4px;min-height:114px;box-shadow:inset 0 0 0 2px #3d5389,0 8px 0 #070c1a}
+.dialogue-panel{position:relative;z-index:7;margin:16px 12px 0;border:3px solid #e6c17e;background:repeating-linear-gradient(0deg,#101e40,#101e40 3px,#122448 4px);padding:23px 24px 25px;border-radius:4px;min-height:114px;box-shadow:inset 0 0 0 2px #3d5389,0 8px 0 #070c1a}
 .dialogue-name{position:absolute;top:-20px;left:14px;min-width:148px;padding:5px 14px;text-align:center;color:#fff7e4;background:linear-gradient(#38599b,#193671);border:2px solid #f1cc85;border-radius:5px;font-size:13px;font-weight:900;box-shadow:0 3px 0 #10162d}
 .dialogue-panel.con .dialogue-name{background:linear-gradient(#a84b58,#6f1d31)}
 .dialogue-panel.judge .dialogue-name,.dialogue-panel.both .dialogue-name{background:linear-gradient(#9a704c,#63412b)}
-.dialogue-content{font-family:'Malgun Gothic','Noto Sans KR',sans-serif;color:#fffaf1;font-weight:750;font-size:clamp(15px,2vw,20px);line-height:1.7;letter-spacing:-.035em;white-space:normal;text-shadow:0 2px #020b19;min-height:62px}
+.dialogue-content{animation:dialogue-in .20s ease-out;font-family:'Malgun Gothic','Noto Sans KR',sans-serif;color:#fffaf1;font-weight:750;font-size:clamp(15px,2vw,20px);line-height:1.7;letter-spacing:-.035em;white-space:normal;text-shadow:0 2px #020b19;min-height:62px}
 .dialogue-corner{position:absolute;right:18px;bottom:11px;color:#f4ce7e;font-size:13px;animation:bob .9s infinite alternate}
-@keyframes bob{to{transform:translateY(4px)}}
+@keyframes bob{to{transform:translateY(4px)}}@keyframes dialogue-in{from{opacity:.6;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 .info-panel{border:1px solid #745d4d;background:#141c30;border-radius:7px;padding:15px 18px;color:#c2d2e6;line-height:1.7;font-size:14px}
 .info-panel b{color:#ffd78d}
 .record{border:1px solid #3c4b68;border-left:5px solid #6babf1;border-radius:8px;background:#151f33;padding:12px 16px;margin:8px 0 10px}
@@ -263,7 +267,7 @@ div[data-testid="stButton"] button{border-radius:6px;min-height:40px;border-colo
 [data-testid="stMetric"]{background:#161e31;border:1px solid #60557a;border-radius:7px;padding:14px}
 [data-testid="stRadio"]{background:#151f32;border:1px solid #4c5771;border-radius:7px;padding:10px 13px}
 [data-testid="stProgress"]{margin:12px 0}
-@media(max-width:760px){.block-container{padding-top:.7rem}.main-banner{padding:16px}.courtroom-scene{min-height:270px;aspect-ratio:13/9}.sprite-defense{width:52%;left:-10%}.sprite-prosecutor{width:52%;right:-10%}.sprite-judge{width:32%;left:34%;bottom:17%}.court-tag{font-size:10px;padding:4px 6px}.tag-judge{bottom:33px}.dialogue-panel{margin:-5px 2px 0;padding:25px 14px 17px}.progress-step{min-width:94px;font-size:11px}.courtroom-top{font-size:8px;letter-spacing:.08em}.courtroom-top span{padding:0 2px}}
+@media(max-width:760px){.block-container{padding-top:.7rem}.main-banner{padding:16px}.courtroom-scene{min-height:270px;aspect-ratio:13/9}.sprite-defense{width:52%;left:-10%}.sprite-prosecutor{width:52%;right:-10%}.sprite-judge{width:32%;left:34%;bottom:17%}.court-tag{font-size:10px;padding:4px 6px}.tag-judge{bottom:33px}.dialogue-panel{margin:14px 2px 0;padding:25px 14px 17px}.progress-step{min-width:94px;font-size:11px}.courtroom-top{font-size:8px;letter-spacing:.08em}.courtroom-top span{padding:0 2px}}
 </style>
 """)
 
@@ -272,6 +276,7 @@ DEFAULTS = {
     "topic": "", "lines": [], "report": None, "before_locked": None,
     "final_choice": None, "used_rounds": None, "current_side": "judge",
     "current_line": "어서 오세요, 판사님. 오늘의 사건을 배정하겠습니다.", "error_message": "",
+    "game_started": False, "pro_history": [], "con_history": [], "used_styles": None,
 }
 for key, default in DEFAULTS.items():
     if key not in st.session_state:
@@ -284,7 +289,7 @@ def current_step():
         return 5
     if s.report:
         return 4
-    if s.lines:
+    if s.game_started or s.lines:
         return 3
     if s.topic:
         return 2
@@ -337,91 +342,123 @@ if st.button("🎲 오늘의 쟁점 추첨하기", type="primary", use_container
     slot.html(slot_html(chosen, spinning=False))
     st.rerun()
 
-# =============== STEP 2: 게임 무대와 사전 판단 ===============
-st.html('<div class="section-kicker">COURTROOM · 제1 법정</div>')
-stage = st.empty()
-stage.html(scene_html(st.session_state.current_side, st.session_state.current_line))
+# =============== STEP 2: 법정 게임 화면과 단계별 발언 ===============
+# 각 버튼은 Gemini를 딱 1회 호출합니다. 이 때문에 말이 한꺼번에 나타나지 않습니다.
+def expected_utterances():
+    return 1 + 2 * (st.session_state.used_rounds or 0)
 
-if st.session_state.topic and not st.session_state.lines:
-    st.html('<div class="section-kicker">CASE 02 · 판사님의 사전 의견</div>')
-    st.html(f'<div class="info-panel"><b>오늘의 안건</b><br>{escape(st.session_state.topic)}</div>')
-    st.radio("토론이 시작되기 전, 판사님의 의견은?", CHOICES, key="vote_before", index=None, horizontal=True)
-    can_start = st.session_state.get("vote_before") in CHOICES
-    do_start = st.button("⚔️ 개정! 변론 시작", type="primary", use_container_width=True, disabled=not can_start)
-    if not can_start:
-        st.caption("먼저 사전 의견을 선택하면 변론 시작 버튼이 활성화됩니다.")
-else:
-    do_start = False
 
-# =============== STEP 3: 변호사 AI vs 검사 AI ===============
-if do_start:
+def next_speaker():
+    return "pro" if len(st.session_state.lines) % 2 == 0 else "con"
+
+
+def advance_one_turn():
+    """지금 차례의 AI 발언 한 개만 받아 저장. 화면은 다음 rerun에서 출력."""
     s = st.session_state
-    s.before_locked = s.get("vote_before")
-    s.used_rounds = rounds
-    s.lines = []
-    s.report = None
-    s.final_choice = None
-    s.error_message = ""
-    pro_history, con_history = [], []
-    pro_prompt = build_prompt("찬성", "변호사 AI", s.topic, pro_style)
-    con_prompt = build_prompt("반대", "검사 AI", s.topic, con_style)
-    total = 1 + 2 * rounds
-    progress = st.progress(0, text="🔔 법정 개정 · 변론을 준비합니다")
-
+    index = len(s.lines)
+    if not s.game_started or index >= expected_utterances():
+        return False
+    side = next_speaker()
+    speaker = "변호사 AI" if side == "pro" else "검사 AI"
+    heard = s.lines[-1]["text"] if s.lines else "토론을 시작합니다. 쟁점에 찬성하는 첫 주장을 해 주세요."
+    label = "첫 변론" if index == 0 else (f"제{(index + 1) // 2}차 반론" if side == "con" else f"제{index // 2}차 재반론")
+    stance = "찬성" if side == "pro" else "반대"
+    style = s.used_styles[0] if side == "pro" else s.used_styles[1]
+    prompt = build_prompt(stance, speaker, s.topic, style)
+    history = s.pro_history if side == "pro" else s.con_history
     try:
-        client = get_client()
+        with st.spinner(f"🎙️ {speaker}가 {label}을(를) 준비하고 있습니다… (AI 요청 1회)"):
+            answer = debate_turn(get_client(), history, prompt, heard)
+    except Exception as error:
+        s.error_message = explain_error(error)
+        return False
+    s.lines.append({"side": side, "speaker": speaker, "round": label, "text": answer})
+    s.current_side, s.current_line = side, answer
+    s.error_message = ""
+    return True
 
-        def speak(side, history, prompt, heard, round_label):
-            speaker = "변호사 AI" if side == "pro" else "검사 AI"
-            stage.html(scene_html(side, f"{speaker}의 발언을 준비하고 있습니다…"))
-            with st.spinner(f"{speaker} 변론 중…"):
-                response = debate_turn(client, history, prompt, heard)
-            s.current_side, s.current_line = side, response
-            s.lines.append({"side": side, "speaker": speaker, "round": round_label, "text": response})
-            stage.html(scene_html(side, response))
-            progress.progress(round(len(s.lines)/total*88), text=f"🎙️ {speaker} · {round_label} ({len(s.lines)}/{total})")
-            return response
 
-        latest_pro = speak("pro", pro_history, pro_prompt, "토론을 시작합니다. 주제를 지지하는 첫 주장을 해주세요.", "첫 변론")
-        for r in range(1, rounds + 1):
-            latest_con = speak("con", con_history, con_prompt, latest_pro, f"제{r}차 반론")
-            latest_pro = speak("pro", pro_history, pro_prompt, latest_con, f"제{r}차 재반론")
-
-        transcript = "\n".join(f"[{x['speaker']} / {x['round']}] {x['text']}" for x in s.lines)
-        with st.spinner("📜 기록관 AI가 참고 분석을 작성합니다…"):
-            result = client.interactions.create(
+def get_analysis_report():
+    """모든 발언을 읽고 참고 분석 한 번만 생성. 사용자가 최종 판사."""
+    s = st.session_state
+    if not s.game_started or len(s.lines) != expected_utterances() or s.report is not None:
+        return False
+    transcript = "\n".join(f"[{x['speaker']} / {x['round']}] {x['text']}" for x in s.lines)
+    try:
+        with st.spinner("📜 기록관 AI가 참고 분석을 작성하고 있습니다… (AI 요청 1회)"):
+            response = get_client().interactions.create(
                 model=MODEL, store=False, system_instruction=REPORT_PROMPT,
                 input=f"오늘의 쟁점: {s.topic}\n<토론>\n{transcript}\n</토론>",
                 response_format={"type": "text", "mime_type": "application/json", "schema": REPORT_SCHEMA},
             )
-            s.report = json.loads(result.output_text)
-        s.current_side, s.current_line = "both", FINAL_QUESTION
-        stage.html(scene_html("both", FINAL_QUESTION))
-        progress.progress(100, text="✅ 양측 변론 종료 · 판사님의 최종 판결을 기다립니다")
-        st.rerun()
+            report = json.loads(response.output_text or "{}")
+            if report.get("winner") not in ("찬성", "반대", "무승부"):
+                raise ValueError("분석 보고서 형식이 올바르지 않습니다.")
     except Exception as error:
         s.error_message = explain_error(error)
-        progress.empty()
-        st.error(s.error_message)
+        return False
+    s.report = report
+    s.current_side, s.current_line = "both", FINAL_QUESTION
+    s.error_message = ""
+    return True
+
+
+st.html('<div class="section-kicker">COURTROOM · 제1 법정</div>')
+st.html(scene_html(st.session_state.current_side, st.session_state.current_line))
+
+if st.session_state.topic and not st.session_state.game_started:
+    st.html('<div class="section-kicker">CASE 02 · 판사님의 사전 의견</div>')
+    st.html(f'<div class="info-panel"><b>오늘의 안건</b><br>{escape(st.session_state.topic)}</div>')
+    st.radio("토론이 시작되기 전, 판사님의 의견은?", CHOICES, key="vote_before", index=None, horizontal=True)
+    can_start = st.session_state.get("vote_before") in CHOICES
+    if st.button("⚔️ 개정! 변호사 AI 첫 발언 듣기", type="primary", use_container_width=True, disabled=not can_start, key="start_debate"):
+        s = st.session_state
+        s.game_started = True
+        s.before_locked = s.get("vote_before")
+        s.used_rounds = rounds
+        s.used_styles = (pro_style, con_style)
+        s.pro_history, s.con_history, s.lines = [], [], []
+        s.report = None
+        s.final_choice = None
+        s.current_side, s.current_line = "judge", "법정을 개정합니다. 변호사 AI, 첫 발언을 해 주세요."
+        if advance_one_turn():
+            st.rerun()
+    if not can_start:
+        st.caption("사전 의견을 선택하면 첫 발언을 시작할 수 있어요.")
+
+elif st.session_state.game_started:
+    s = st.session_state
+    total = expected_utterances()
+    current = len(s.lines)
+    st.html('<div class="section-kicker">CASE 03 · 단계별 법정 변론</div>')
+    st.progress(round(100 * current / total), text=f"변론 진행 · {current}/{total} 발언")
+    if current < total:
+        role = "변호사 AI" if next_speaker() == "pro" else "검사 AI"
+        st.caption(f"방금 발언을 읽은 다음 진행하세요. 다음 순서: **{role}**")
+        if st.button(f"▶ 다음 발언 듣기 · {role}", type="primary", use_container_width=True, key="next_line"):
+            if advance_one_turn():
+                st.rerun()
+    elif s.report is None:
+        st.success("양측의 변론이 끝났습니다. 판사님, 기록관의 분석을 확인해 보세요.")
+        if st.button("📜 변론 종료 · 기록관 AI 분석 확인", type="primary", use_container_width=True, key="get_report"):
+            if get_analysis_report():
+                st.rerun()
+    else:
+        st.success("변론이 종료되었습니다. 두 AI가 판사님의 최종 판단을 기다리고 있습니다.")
+
+if st.session_state.error_message:
+    st.error(st.session_state.error_message)
+    st.caption("실패한 요청은 진행 횟수에 포함되지 않습니다. 버튼을 다시 누르면 해당 발언만 재시도합니다.")
 
 if st.session_state.lines:
-    st.html('<div class="section-kicker">CASE 03 · 법정 변론 기록</div>')
-    left, right = st.columns(2, gap="medium")
-    for i, rec in enumerate(st.session_state.lines):
-        with left if rec["side"] == "pro" else right:
-            st.html(
-                f'<div class="record {"con" if rec["side"] == "con" else ""}">'
-                f'<div class="record-meta">{escape(rec["speaker"])} · {escape(rec["round"])}</div>'
-                f'<div class="record-body">{multiline(rec["text"])}</div></div>')
-    if st.session_state.error_message and not st.session_state.report:
-        st.warning("발언 중 오류가 생겼습니다. 일부 기록은 현재 탭에 남아 있습니다.")
-    if not st.session_state.report:
-        if st.button("↺ 이 안건으로 변론 다시 시작", key="retry"):
-            st.session_state.lines = []
-            st.session_state.error_message = ""
-            st.session_state.current_side = "judge"
-            st.session_state.current_line = "변론을 처음부터 다시 시작하겠습니다, 판사님."
-            st.rerun()
+    with st.expander(f"📜 지금까지의 변론 기록 보기 ({len(st.session_state.lines)}개)", expanded=False):
+        left, right = st.columns(2, gap="medium")
+        for rec in st.session_state.lines:
+            with left if rec["side"] == "pro" else right:
+                st.html(
+                    f'<div class="record {"con" if rec["side"] == "con" else ""}">'
+                    f'<div class="record-meta">{escape(rec["speaker"])} · {escape(rec["round"])}</div>'
+                    f'<div class="record-body">{multiline(rec["text"])}</div></div>')
 
 # =============== STEP 4: 기록관 분석 (AI 최종 판사가 아님) ===============
 if st.session_state.report:
